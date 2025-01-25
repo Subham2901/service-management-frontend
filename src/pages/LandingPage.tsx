@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import AdminHeader from '../components/AdminHeader'; // Import the AdminHeader
 import Header from '../components/Header';
-import universityImage from '../assets/images/university.jpg'; // Ensure the correct path
+import universityImage from '../assets/images/University.jpg'; // Ensure the correct path
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
