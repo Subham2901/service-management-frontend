@@ -19,13 +19,12 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useAuth } from '../context/AuthContext';
 
 const AdminHeader: React.FC = () => {
-  const { isLoggedIn, setToken, user } = useAuth();
+  const { setToken, user } = useAuth(); // Removed isLoggedIn as it isn't used
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Handle dropdown menu open/close
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -34,14 +33,12 @@ const AdminHeader: React.FC = () => {
     setAnchorEl(null);
   };
 
-  // Logout functionality
   const handleLogoutConfirm = () => {
     setLogoutDialogOpen(false);
     setToken(null); // Clear token and update context
     navigate('/login');
   };
 
-  // Helper function to check if the current path is active
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -53,7 +50,6 @@ const AdminHeader: React.FC = () => {
       }}
     >
       <Toolbar>
-        {/* App Title */}
         <Typography
           variant="h6"
           component={Link}
@@ -68,7 +64,12 @@ const AdminHeader: React.FC = () => {
           Group 2b Service Management App
         </Typography>
 
-        {/* Navigation Links */}
+        {user && (
+          <Typography variant="body1" sx={{ marginRight: 2 }}>
+            Welcome, {user.firstName || 'Admin'}
+          </Typography>
+        )}
+
         <Box>
           <Button
             color="inherit"
@@ -122,14 +123,12 @@ const AdminHeader: React.FC = () => {
               horizontal: 'right',
             }}
           >
-            {/* Navigate to the existing Profile page */}
             <MenuItem onClick={() => navigate('/profile')}>Profile</MenuItem>
             <MenuItem onClick={() => setLogoutDialogOpen(true)}>Logout</MenuItem>
           </Menu>
         </Box>
       </Toolbar>
 
-      {/* Logout Confirmation Dialog */}
       <Dialog
         open={logoutDialogOpen}
         onClose={() => setLogoutDialogOpen(false)}

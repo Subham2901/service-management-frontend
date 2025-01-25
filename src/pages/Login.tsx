@@ -30,6 +30,7 @@ const Login: React.FC = () => {
   const [resetSuccess, setResetSuccess] = useState<string | null>(null);
 
   const { setToken, setUser } = useAuth();
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -60,12 +61,12 @@ const Login: React.FC = () => {
     try {
       setResetError(null);
       setResetSuccess(null);
-      const response = await axiosInstance.post('/users/reset-password', {
+      await axiosInstance.post('/users/reset-password', {
         email: resetEmail,
         securityAnswer,
         newPassword,
       });
-      setResetSuccess(response.data);
+      setResetSuccess('Password reset successfully! You can now log in with your new password.');
       setResetDialogOpen(false);
     } catch (error) {
       console.error('Reset Password Error:', error);
@@ -178,6 +179,11 @@ const Login: React.FC = () => {
           {resetError && (
             <Typography variant="body2" color="error" sx={{ marginBottom: 2 }}>
               {resetError}
+            </Typography>
+          )}
+          {resetSuccess && (
+            <Typography variant="body2" color="success" sx={{ marginBottom: 2 }}>
+              {resetSuccess}
             </Typography>
           )}
           <TextField

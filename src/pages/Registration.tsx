@@ -14,6 +14,7 @@ import {
 import ParticlesBackground from '../components/ParticlesBackground';
 import Header from '../components/Header';
 import axiosInstance from '../axiosConfig'; // Use the configured axios instance
+import { SelectChangeEvent } from '@mui/material';
 
 const Registration: React.FC = () => {
   const navigate = useNavigate();
@@ -33,9 +34,9 @@ const Registration: React.FC = () => {
   const [error, setError] = useState('');
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | { value: unknown }>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>
   ) => {
-    const { name, value } = e.target as HTMLInputElement;
+    const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,

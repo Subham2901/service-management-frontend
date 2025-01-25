@@ -1,41 +1,30 @@
-import Particles, { initParticlesEngine } from "@tsparticles/react";
-import { useEffect, useMemo, useState } from "react";
-// import { loadAll } from "@/tsparticles/all"; // if you are going to use `loadAll`, install the "@tsparticles/all" package too.
-// import { loadFull } from "tsparticles"; // if you are going to use `loadFull`, install the "tsparticles" package too.
-import { loadSlim } from "@tsparticles/slim"; // if you are going to use `loadSlim`, install the "@tsparticles/slim" package too.
-// import { loadBasic } from "@tsparticles/basic"; // if you are going to use `loadBasic`, install the "@tsparticles/basic" package too.
+import Particles from "@tsparticles/react";
+import { useEffect, useMemo } from "react";
+import { loadSlim } from "@tsparticles/slim";
+import { Engine, ISourceOptions } from "@tsparticles/engine";
 
+interface ParticlesBackgroundProps {
+  id: string;
+}
 
-
-const ParticlesBackground  = (props) => {
-
-  const [init, setInit] = useState(false);
-  // this should be run only once per application lifetime
+const ParticlesBackground = (props: ParticlesBackgroundProps): JSX.Element => {
   useEffect(() => {
-    initParticlesEngine(async (engine) => {
-      // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
-      // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
-      // starting from v2 you can add only the features you need reducing the bundle size
-      //await loadAll(engine);
-      //await loadFull(engine);
+    const initializeParticles = async (engine: Engine) => {
       await loadSlim(engine);
-      //await loadBasic(engine);
-    }).then(() => {
-      setInit(true);
-    });
+    };
+    initializeParticles(window.tsParticles);
   }, []);
 
-  const particlesLoaded = (container) => {
-    console.log(container);
-  };
-
-
-  const options = useMemo(
+  const options: ISourceOptions = useMemo(
     () => ({
+      autoPlay: true,
       background: {
         color: {
           value: "#1E2F97",
         },
+      },
+      backgroundMask: {
+        enable: false,
       },
       fpsLimit: 120,
       interactivity: {
@@ -46,13 +35,15 @@ const ParticlesBackground  = (props) => {
           },
           onHover: {
             enable: true,
-            mode: 'grab',
+            mode: "grab",
           },
         },
         modes: {
           push: {
+            quantity: 4,
+          },
+          repulse: {
             distance: 200,
-            duration: 15,
           },
           grab: {
             distance: 150,
@@ -76,18 +67,19 @@ const ParticlesBackground  = (props) => {
           outModes: {
             default: "bounce",
           },
-          random: true,
+          random: false,
           speed: 1,
           straight: false,
         },
         number: {
           density: {
             enable: true,
+            area: 800,
           },
           value: 150,
         },
         opacity: {
-          value: 1.0,
+          value: 0.5,
         },
         shape: {
           type: "circle",
@@ -98,11 +90,10 @@ const ParticlesBackground  = (props) => {
       },
       detectRetina: true,
     }),
-    [],
+    []
   );
 
-
-  return <Particles id={props.id} init={particlesLoaded} options={options} />; 
+  return <Particles id={props.id} options={options} />;
 };
 
-export default ParticlesBackground ;
+export default ParticlesBackground;
