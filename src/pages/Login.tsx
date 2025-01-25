@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Box, Button, TextField, Typography, Container, CircularProgress } from '@mui/material';
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Container,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+} from '@mui/material';
 import ParticlesBackground from '../components/ParticlesBackground';
 import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
@@ -11,24 +22,54 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { setToken } = useAuth();
-  const navigate = useNavigate();
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [securityAnswer, setSecurityAnswer] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [resetError, setResetError] = useState<string | null>(null);
+  const [resetSuccess, setResetSuccess] = useState<string | null>(null);
 
+  const { setToken, setUser } = useAuth();
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null); // Clear previous error
-
     try {
+      setLoading(true);
       const response = await axiosInstance.post('/auth/login', { email, password });
-      setToken(response.data.access_token); // Notify AuthContext
-      alert('Login successful!');
-      navigate('/dashboard'); // Redirect to dashboard
-    } catch (err) {
-      console.error('Login error:', err);
+      setToken(response.data.access_token);
+
+      const userDetails = await axiosInstance.get('/auth/me', {
+        headers: { Authorization: `Bearer ${response.data.access_token}` },
+      });
+      setUser(userDetails.data);
+
+      // Redirect based on role
+      if (userDetails.data.role === 'admin') {
+        window.location.href = '/admin/dashboard';
+      } else {
+        window.location.href = '/dashboard';
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       setError('Invalid credentials. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    try {
+      setResetError(null);
+      setResetSuccess(null);
+      const response = await axiosInstance.post('/users/reset-password', {
+        email: resetEmail,
+        securityAnswer,
+        newPassword,
+      });
+      setResetSuccess(response.data);
+      setResetDialogOpen(false);
+    } catch (error) {
+      console.error('Reset Password Error:', error);
+      setResetError('Failed to reset password. Please check your details.');
     }
   };
 
@@ -63,7 +104,6 @@ const Login: React.FC = () => {
             backgroundColor: 'white',
           }}
         >
-          {/* Title */}
           <Typography
             variant="h5"
             align="center"
@@ -73,14 +113,12 @@ const Login: React.FC = () => {
             Log In
           </Typography>
 
-          {/* Error Message */}
           {error && (
             <Typography variant="body2" color="error" sx={{ marginBottom: 2 }}>
               {error}
             </Typography>
           )}
 
-          {/* Loading Indicator */}
           {loading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', marginY: 2 }}>
               <CircularProgress />
@@ -117,8 +155,68 @@ const Login: React.FC = () => {
               </Button>
             </form>
           )}
+
+          <Button
+            variant="text"
+            color="primary"
+            fullWidth
+            sx={{ marginTop: 2 }}
+            onClick={() => setResetDialogOpen(true)}
+          >
+            Forgot Password?
+          </Button>
         </Box>
       </Container>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={resetDialogOpen} onClose={() => setResetDialogOpen(false)}>
+        <DialogTitle>Reset Password</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Enter your email, security answer, and a new password to reset your password.
+          </DialogContentText>
+          {resetError && (
+            <Typography variant="body2" color="error" sx={{ marginBottom: 2 }}>
+              {resetError}
+            </Typography>
+          )}
+          <TextField
+            label="Email"
+            type="email"
+            value={resetEmail}
+            onChange={(e) => setResetEmail(e.target.value)}
+            fullWidth
+            required
+            margin="normal"
+          />
+          <TextField
+            label="Security Answer"
+            type="text"
+            value={securityAnswer}
+            onChange={(e) => setSecurityAnswer(e.target.value)}
+            fullWidth
+            required
+            margin="normal"
+          />
+          <TextField
+            label="New Password"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            fullWidth
+            required
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setResetDialogOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleResetPassword} color="primary">
+            Reset Password
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

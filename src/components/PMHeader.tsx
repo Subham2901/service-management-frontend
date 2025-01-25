@@ -18,7 +18,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useAuth } from '../context/AuthContext';
 
-const Header: React.FC = () => {
+const PMHeader: React.FC = () => {
   const { isLoggedIn, setToken, user } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
@@ -42,18 +42,13 @@ const Header: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <AppBar
-      position="sticky"
-      sx={{
-        backgroundColor: '#1E2F97',
-        zIndex: 20,
-      }}
-    >
+    <AppBar position="sticky" sx={{ backgroundColor: '#1E2F97', zIndex: 20 }}>
       <Toolbar>
+        {/* PM App Title */}
         <Typography
           variant="h6"
-          component={Link}
-          to={isLoggedIn ? (user?.role === 'admin' ? '/admin/dashboard' : '/dashboard') : '/home'}
+          component="div"
+          onClick={() => navigate('/pm/dashboard')} // Ensures proper redirection to PM Dashboard
           sx={{
             flexGrow: 1,
             textDecoration: 'none',
@@ -61,75 +56,52 @@ const Header: React.FC = () => {
             cursor: 'pointer',
           }}
         >
-          Group 2b Service Management App
+          PM Service Management App
         </Typography>
 
         <Box>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/home"
-            sx={{
-              marginX: 1,
-              backgroundColor: isActive('/home') ? '#2E3B8E' : 'transparent',
-              ':hover': { backgroundColor: '#2E3B8E', borderRadius: 1 },
-            }}
-          >
-            Home
-          </Button>
-          {!isLoggedIn ? (
+          {isLoggedIn && user?.role === 'PM' && (
             <>
+              {/* Home Button */}
               <Button
                 color="inherit"
-                component={Link}
-                to="/register"
+                onClick={() => navigate('/home')} // Properly redirects to Landing Page
                 sx={{
                   marginX: 1,
-                  backgroundColor: isActive('/register') ? '#2E3B8E' : 'transparent',
+                  backgroundColor: isActive('/home') ? '#2E3B8E' : 'transparent',
                   ':hover': { backgroundColor: '#2E3B8E', borderRadius: 1 },
                 }}
               >
-                Register
+                Home
               </Button>
+
+              {/* PM Dashboard */}
               <Button
                 color="inherit"
-                component={Link}
-                to="/login"
+                onClick={() => navigate('/pm/dashboard')} // Properly redirects to PM Dashboard
                 sx={{
                   marginX: 1,
-                  backgroundColor: isActive('/login') ? '#2E3B8E' : 'transparent',
-                  ':hover': { backgroundColor: '#2E3B8E', borderRadius: 1 },
-                }}
-              >
-                Login
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                color="inherit"
-                component={Link}
-                to="/dashboard"
-                sx={{
-                  marginX: 1,
-                  backgroundColor: isActive('/dashboard') ? '#2E3B8E' : 'transparent',
+                  backgroundColor: isActive('/pm/dashboard') ? '#2E3B8E' : 'transparent',
                   ':hover': { backgroundColor: '#2E3B8E', borderRadius: 1 },
                 }}
               >
                 Dashboard
               </Button>
+
+              {/* PM Master Agreements */}
               <Button
                 color="inherit"
-                component={Link}
-                to="/master-agreements"
+                onClick={() => navigate('/pm-master-agreements')} // Properly redirects to PM Master Agreements
                 sx={{
                   marginX: 1,
-                  backgroundColor: isActive('/master-agreements') ? '#2E3B8E' : 'transparent',
+                  backgroundColor: isActive('/pm-master-agreements') ? '#2E3B8E' : 'transparent',
                   ':hover': { backgroundColor: '#2E3B8E', borderRadius: 1 },
                 }}
               >
                 Master Agreements
               </Button>
+
+              {/* Profile and Logout */}
               <IconButton color="inherit" onClick={handleMenuOpen}>
                 <AccountCircleIcon />
               </IconButton>
@@ -148,6 +120,7 @@ const Header: React.FC = () => {
         </Box>
       </Toolbar>
 
+      {/* Logout Confirmation Dialog */}
       <Dialog
         open={logoutDialogOpen}
         onClose={() => setLogoutDialogOpen(false)}
@@ -171,4 +144,4 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header;
+export default PMHeader;

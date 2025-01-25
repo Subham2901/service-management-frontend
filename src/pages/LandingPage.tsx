@@ -1,46 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, CircularProgress } from '@mui/material';
+import React from 'react';
+import { Box, Typography, Button } from '@mui/material';
+import AdminHeader from '../components/AdminHeader'; // Import the AdminHeader
 import Header from '../components/Header';
 import universityImage from '../assets/images/university.jpg'; // Ensure the correct path
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const LandingPage: React.FC = () => {
-  const { isLoggedIn, token } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (token !== null) {
-      setLoading(false);
-    }
-  }, [token]);
 
   const handleGetStarted = () => {
-    navigate(isLoggedIn ? '/dashboard' : '/login');
+    if (isLoggedIn) {
+      navigate(user?.role === 'admin' ? '/admin/dashboard' : '/dashboard');
+    } else {
+      navigate('/login');
+    }
   };
-
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          width: '100vw',
-          height: '100vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: '#f3f4f6',
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   return (
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
-      {/* Header */}
-      <Header />
+      {/* Conditionally render the header based on the user's role */}
+      {isLoggedIn && user?.role === 'admin' ? <AdminHeader /> : <Header />}
 
       {/* Main Content */}
       <Box
