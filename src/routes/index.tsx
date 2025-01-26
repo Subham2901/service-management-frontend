@@ -24,6 +24,10 @@ import AssignedServiceRequestDetails from '../pages/AssignedServiceRequestDetail
 import ApprovedServiceRequests from '../pages/ApprovedServiceRequests';
 import ApprovedServiceRequestDetails from '../pages/ApprovedServiceRequestDetails';
 
+// New User Pages
+import UserServiceRequestList from '../pages/UserServiceRequestList';
+import UserDraftServiceRequestList from '../pages/UserDraftServiceRequestList'; // Draft List Page
+import DraftManagement from '../pages/DraftManagement'; // New Draft Management Page
 
 const AppRoutes: React.FC = () => {
   const { isLoggedIn, user } = useAuth();
@@ -124,14 +128,13 @@ const AppRoutes: React.FC = () => {
           element={isLoggedIn && isPM ? <AssignedServiceRequestDetails /> : <Navigate to="/login" />}
         />
         <Route
-        path='/pm-approved-requests'
-        element={isLoggedIn && isPM ? <ApprovedServiceRequests /> : <Navigate to='/login' />}
-      />
-      <Route  
-        path='/pm-approved-requests/:id'
-        element={isLoggedIn && isPM ? <ApprovedServiceRequestDetails /> : <Navigate to='/login' />}
-      />
-  
+          path="/pm-approved-requests"
+          element={isLoggedIn && isPM ? <ApprovedServiceRequests /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/pm-approved-requests/:id"
+          element={isLoggedIn && isPM ? <ApprovedServiceRequestDetails /> : <Navigate to="/login" />}
+        />
 
         {/* User Routes */}
         <Route
@@ -146,10 +149,25 @@ const AppRoutes: React.FC = () => {
           path="/master-agreements/:id"
           element={isLoggedIn && !isAdmin && !isPM ? <MasterAgreementDetails /> : <Navigate to="/login" />}
         />
-        <Route path="/profile" element={isLoggedIn ? <Profile /> : <Navigate to="/login" />} />
+        <Route
+          path="/profile"
+          element={isLoggedIn ? <Profile /> : <Navigate to="/login" />}
+        />
         <Route
           path="/create-service-request"
           element={isLoggedIn && !isAdmin && !isPM ? <ServiceRequestCreation /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/service-requests"
+          element={isLoggedIn && !isAdmin && !isPM ? <UserServiceRequestList /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/user-drafts"
+          element={isLoggedIn && !isAdmin && !isPM ? <UserDraftServiceRequestList /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/drafts/:id"
+          element={isLoggedIn && !isAdmin && !isPM ? <DraftManagement /> : <Navigate to="/login" />}
         />
       </Routes>
     </Router>

@@ -16,6 +16,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from '../axiosConfig';
 import ParticlesBackground from '../components/ParticlesBackground';
 import Header from '../components/Header';
+import { useAuth } from '../context/AuthContext';
+
 
 const ServiceRequestCreation: React.FC = () => {
   const location = useLocation();
@@ -52,57 +54,91 @@ const ServiceRequestCreation: React.FC = () => {
 
   const agreementDetails = location.state?.rolesAndDomains || [];
   const today = new Date().toISOString().split('T')[0];
+  const { user } = useAuth();
 
   useEffect(() => {
-    const user = {
-      firstName: 'John',
-      lastName: 'Doe',
-    };
-    setFormData((prev) => ({
-      ...prev,
-      consumer: `${user.firstName} ${user.lastName}`,
-    }));
-  }, []);
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        consumer: `${user.firstName} ${user.lastName}`,
+      }));
+    }
+  }, [user]);
+  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleMemberChange = (
-    index: number,
-    field: string,
-    value: string | number
-  ) => {
-    const updatedMembers = [...formData.selectedMembers];
-    updatedMembers[index] = { ...updatedMembers[index], [field]: value };
-
-    if (field === 'domainId') {
-      const selectedDomain = agreementDetails.find(
-        (domain: any) => domain.domainId === value
-      );
-      updatedMembers[index].domainName = selectedDomain?.domainName || '';
-      updatedMembers[index].roleId = '';
-      updatedMembers[index].role = '';
-      updatedMembers[index].level = '';
-      updatedMembers[index].technologyLevel = '';
-    }
-
-    if (field === 'role') {
-      const selectedDomain = agreementDetails.find(
-        (domain: any) => domain.domainId === updatedMembers[index].domainId
-      );
-      const selectedRole = selectedDomain?.roleDetails.find(
-        (role: any) => role.role === value
-      );
-      updatedMembers[index].technologyLevel = selectedRole?.technologyLevel || '';
-      updatedMembers[index].roleId = selectedRole?.roleId || '';
-      updatedMembers[index].level = selectedRole?.level || '';
-    }
-
-    setFormData((prev) => ({ ...prev, selectedMembers: updatedMembers }));
-    updateNumberOfSpecialists(updatedMembers);
+  const getSelectedCombinations = () => {
+    return formData.selectedMembers.map((member) => ({
+      role: member.role,
+      level: member.level,
+      technologyLevel: member.technologyLevel,
+    }));
   };
+  
+
+const handleMemberChange = (
+  index: number,
+  field: string,
+  value: string | number
+) => {
+  const updatedMembers = [...formData.selectedMembers];
+  updatedMembers[index] = { ...updatedMembers[index], [field]: value };
+
+  if (field === 'domainId') {
+    const selectedDomain = agreementDetails.find(
+      (domain: any) => domain.domainId === value
+    );
+    updatedMembers[index].domainName = selectedDomain?.domainName || '';
+    updatedMembers[index].roleId = '';
+    updatedMembers[index].role = '';
+    updatedMembers[index].level = ''; // Clear level when domain changes
+    updatedMembers[index].technologyLevel = '';
+  }
+
+  if (field === 'role') {
+    const selectedDomain = agreementDetails.find(
+      (domain: any) => domain.domainId === updatedMembers[index].domainId
+    );
+    const selectedRole = selectedDomain?.roleDetails.find(
+      (role: any) => role.role === value
+    );
+    updatedMembers[index].roleId = selectedRole?.roleId || '';
+    updatedMembers[index].technologyLevel = selectedRole?.technologyLevel || '';
+    updatedMembers[index].level = ''; // Reset level when role changes
+  }
+
+  if (field === 'level') {
+    const selectedDomain = agreementDetails.find(
+      (domain: any) => domain.domainId === updatedMembers[index].domainId
+    );
+    const selectedRole = selectedDomain?.roleDetails.find(
+      (role: any) => role.role === updatedMembers[index].role && role.level === value
+    );
+    updatedMembers[index].level = selectedRole?.level || '';
+  }
+
+  setFormData((prev) => ({ ...prev, selectedMembers: updatedMembers }));
+  updateNumberOfSpecialists(updatedMembers);
+};
+
+  const allCombinationsSelected = () => {
+    const selectedCombinations = getSelectedCombinations();
+    return agreementDetails.every((domain: any) =>
+      domain.roleDetails.every((role: any) =>
+        selectedCombinations.some(
+          (combination) =>
+            combination.role === role.role &&
+            combination.level === role.level &&
+            combination.technologyLevel === role.technologyLevel
+        )
+      )
+    );
+  };
+  
 
   const calculateAmountOfManDays = (startDate: string, endDate: string) => {
     const start = new Date(startDate);
@@ -189,6 +225,7 @@ const ServiceRequestCreation: React.FC = () => {
     }));
   };
 
+
   const removeMember = (index: number) => {
     const updatedMembers = formData.selectedMembers.filter((_, i) => i !== index);
     setFormData((prev) => ({ ...prev, selectedMembers: updatedMembers }));
@@ -203,34 +240,7 @@ const ServiceRequestCreation: React.FC = () => {
     setNumberOfSpecialists(total);
   };
 
-/*   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
 
-    const preparedData = {
-      ...formData,
-      representatives: formData.representatives.split(',').map((rep) => rep.trim()),
-      amountOfManDays: calculateAmountOfManDays(formData.begin, formData.end),
-      numberOfOffers: Number(formData.numberOfOffers),
-      numberOfSpecialists,
-    };
-
-    if (formData.numberOfOffers > 2) {
-      alert('Number of Offers cannot exceed 2.');
-      return;
-    }
-
-    console.log('Generated Request Body:', preparedData);
-
-    try {
-      const response = await axios.post('/service-requests', preparedData);
-      console.log('API Response:', response.data);
-      alert('Service request created successfully!');
-      navigate('/dashboard');
-    } catch (error) {
-      console.error('Error creating service request:', error);
-      alert('Failed to create service request.');
-    }
-  }; */
   const handleSaveAsDraft = async () => {
     const preparedData = {
       ...formData,
@@ -255,9 +265,45 @@ const ServiceRequestCreation: React.FC = () => {
     }
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    // Validation for number of offers
+    if (formData.numberOfOffers < 1) {
+      alert('Number of Offers must be at least 1.');
+      return;
+    }
+    if (formData.numberOfOffers > 2) {
+      alert('Number of Offers cannot exceed 2.');
+      return;
+    }
+  
+    // Validation for profiles
+    if (formData.selectedMembers.some((member) => member.numberOfProfilesNeeded < 1)) {
+      alert('Number of profiles needed for each selected member must be at least 1.');
+      return;
+    }
+  
+    // Validation for Multi type
+    if (formData.type === 'Multi' && formData.selectedMembers.some((member) => member.numberOfProfilesNeeded < 2)) {
+      alert('For the "Multi" type, at least two profiles must be selected.');
+      return;
+    }
+    //Validation for single type.
+    if (formData.type === 'Single' && formData.selectedMembers.some((member) => member.numberOfProfilesNeeded >1)) {
+      alert('For the "Single" type, Only one profile must be selected.');
+      return;
+    }
+  //Validation for team type.
+  if (formData.type === 'Team' && formData.selectedMembers.length < 2) {
+    alert('For the "Team" type, at least two members must be selected.');
+    return;
+  }
 
+  
+    // Prepare data for submission
     const preparedData = {
       ...formData,
       representatives: formData.representatives.split(',').map((rep) => rep.trim()),
@@ -265,24 +311,28 @@ const ServiceRequestCreation: React.FC = () => {
       numberOfOffers: Number(formData.numberOfOffers),
       numberOfSpecialists,
     };
-
-    if (formData.numberOfOffers > 2) {
-      alert('Number of Offers cannot exceed 2.');
-      return;
-    }
-
-    console.log('Directly Submitting Service Request:', preparedData);
-
+  
+    // Show Loading State
+    setIsSubmitting(true);
+  
     try {
+      console.log('Directly Submitting Service Request:', preparedData);
+  
       const response = await axios.post('/service-requests/directsubmit', preparedData);
       console.log('Service Request Submitted:', response.data);
+  
       alert('Service request submitted successfully!');
       navigate('/dashboard');
     } catch (error) {
       console.error('Error submitting service request:', error);
       alert('Failed to submit service request.');
+    } finally {
+      // Reset Loading State
+      setIsSubmitting(false);
     }
   };
+  
+  
 
   const handleCancel = () => {
     if (window.confirm('Are you sure you want to cancel? All unsaved changes will be lost.')) {
@@ -361,26 +411,26 @@ const ServiceRequestCreation: React.FC = () => {
             </Grid>
             {formData.type === 'Team' && (
               <Grid item xs={12}>
-                <Button variant="contained" onClick={addMember} sx={{ marginBottom: 2 }}>
+                <Button variant="contained" onClick={addMember} sx={{ marginBottom: 2 }} disabled={allCombinationsSelected()}>
                   Add Member
                 </Button>
               </Grid>
             )}
 {formData.selectedMembers.map((member, index) => (
   <Box
-    key={index}
-    sx={{
-      marginBottom: 2,
-      padding: 1,
-      border: '3px solid #ccc',
-      borderRadius: 2,
-      backgroundColor: '#ffffff',
-      boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-    }}
-  >
+  key={index}
+  sx={{
+    marginTop: 2,
+    marginBottom: 2,
+    padding: 2,
+    borderRadius: 2,
+    backgroundColor: '#f9f9f9',
+    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  }}
+>
     <Grid
       container
       spacing={2}
@@ -390,6 +440,7 @@ const ServiceRequestCreation: React.FC = () => {
         justifyContent: 'space-between', // Center and align content
       }}
     >
+      {/* Domain Dropdown */}
       <Grid item xs={12} sm={3}>
         <FormControl fullWidth>
           <InputLabel>Domain</InputLabel>
@@ -406,24 +457,90 @@ const ServiceRequestCreation: React.FC = () => {
           </Select>
         </FormControl>
       </Grid>
-      <Grid item xs={12} sm={3}>
-        <FormControl fullWidth>
-          <InputLabel>Role</InputLabel>
-          <Select
-            value={member.role || ''}
-            onChange={(e) => handleMemberChange(index, 'role', e.target.value)}
-          >
-            <MenuItem value="">Select Role</MenuItem>
-            {agreementDetails
-              .find((domain: any) => domain.domainId === member.domainId)
-              ?.roleDetails.map((role: any) => (
-                <MenuItem key={role.roleId} value={role.role}>
-                  {role.role} ({role.level})
-                </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
-      </Grid>
+
+{/* Role Dropdown */}
+<Grid item xs={12} sm={3}>
+  <FormControl fullWidth>
+    <InputLabel>Role</InputLabel>
+    {/* Role Dropdown */}
+    <Select
+  value={member.role || ''}
+  onChange={(e) => handleMemberChange(index, 'role', e.target.value)}
+>
+  <MenuItem value="">Select Role</MenuItem>
+  {Array.from(
+    new Set(
+      agreementDetails
+        .find((domain: any) => domain.domainId === member.domainId)
+        ?.roleDetails.map((role: any) => role.role) || []
+    )
+  )
+    .filter((uniqueRole) => {
+      const selectedCombinations = getSelectedCombinations();
+      return (
+        uniqueRole === member.role || // Include the currently selected role
+        !selectedCombinations.some(
+          (combination) =>
+            combination.role === uniqueRole &&
+            combination.level === member.level &&
+            combination.technologyLevel === member.technologyLevel
+        )
+      );
+    })
+    .map((uniqueRole) => (
+      <MenuItem key={uniqueRole as string} value={uniqueRole as string}>
+        {uniqueRole as string}
+      </MenuItem>
+    ))}
+</Select>
+
+
+
+  </FormControl>
+</Grid>
+
+
+{/* Level Dropdown */}
+<Grid item xs={12} sm={3}>
+<FormControl fullWidth>
+  <InputLabel>Level</InputLabel>
+  <Select
+    value={member.level || ''}
+    onChange={(e) => handleMemberChange(index, 'level', e.target.value)}
+    disabled={!member.role} // Disable Level dropdown if no Role is selected
+  >
+    <MenuItem value="">Select Level</MenuItem>
+    {agreementDetails
+      .find((domain: any) => domain.domainId === member.domainId)
+      ?.roleDetails
+      .filter((role: any) => role.role === member.role)
+      .map((role: any) => role.level)
+      .filter((uniqueLevel: string) => {
+        const selectedCombinations = getSelectedCombinations();
+        return (
+          uniqueLevel === member.level || // Include the currently selected level
+          !selectedCombinations.some(
+            (combination) =>
+              combination.role === member.role &&
+              combination.level === uniqueLevel &&
+              combination.technologyLevel === member.technologyLevel
+          )
+        );
+      })
+      .map((uniqueLevel: string) => (
+        <MenuItem key={uniqueLevel} value={uniqueLevel}>
+          {uniqueLevel}
+        </MenuItem>
+      ))}
+  </Select>
+</FormControl>
+
+
+</Grid>
+
+
+
+      {/* Technology Level */}
       <Grid item xs={12} sm={3}>
         <TextField
           label="Technology Level"
@@ -432,6 +549,8 @@ const ServiceRequestCreation: React.FC = () => {
           disabled
         />
       </Grid>
+
+      {/* Profiles Needed */}
       <Grid item xs={12} sm={2}>
         <TextField
           label="Profiles Needed"
@@ -443,6 +562,8 @@ const ServiceRequestCreation: React.FC = () => {
           fullWidth
         />
       </Grid>
+
+      {/* Remove Member Button */}
       <Grid
         item
         xs={12}
@@ -468,9 +589,24 @@ const ServiceRequestCreation: React.FC = () => {
   </Box>
 ))}
 
-
-
-
+{/*
+<Box
+  sx={{
+    marginTop: 4,
+    padding: 2,
+    border: '1px solid #ddd',
+    borderRadius: 2,
+    backgroundColor: '#f9f9f9',
+    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+  }}
+>
+ <Typography variant="h6" gutterBottom>
+    Debugger
+  </Typography>
+  <pre style={{ fontSize: '14px', color: '#333', overflowX: 'auto' }}>
+    {JSON.stringify(formData.selectedMembers, null, 2)}
+  </pre>
+</Box> */}
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Start Date"
@@ -589,9 +725,16 @@ const ServiceRequestCreation: React.FC = () => {
     </Button>
   </Grid>
   <Grid item xs={12} sm={4}>
-    <Button type="submit" variant="contained" color="primary" fullWidth>
-      Submit Service Request
-    </Button>
+  <Button
+  type="submit"
+  variant="contained"
+  color="primary"
+  fullWidth
+  disabled={isSubmitting}
+>
+  {isSubmitting ? 'Submitting...' : 'Submit Service Request'}
+</Button>
+
   </Grid>
   <Grid item xs={12} sm={4}>
     <Button
