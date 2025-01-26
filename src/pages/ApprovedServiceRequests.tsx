@@ -99,7 +99,7 @@ const ApprovedServiceRequests: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
           <IconButton
             color="primary"
-            onClick={() => navigate('/pm/dashboard')}
+            onClick={() => navigate('/pm-service-request-list')}
             sx={{
               marginRight: 2,
               backgroundColor: '#1e2f97',

@@ -101,6 +101,15 @@ const PMServiceRequestDetails: React.FC = () => {
     );
   }
 
+  const pmRejectionComment =
+    serviceRequest?.notifications?.find((note: string) => note.startsWith('Rejected by PM')) ||
+    'No rejection comment available.';
+
+  const userResubmissionComment =
+    serviceRequest?.notifications?.find((note: string) =>
+      note.startsWith('User Resubmission Comment')
+    ) || 'No resubmission comment available.';
+
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'auto' }}>
       <PMHeader />
@@ -136,6 +145,19 @@ const PMServiceRequestDetails: React.FC = () => {
             borderRadius: 2,
           }}
         >
+          <Box sx={{ marginBottom: 3 }}>
+            <Typography variant="h6" color="error" gutterBottom>
+              PM Rejection Comment:
+            </Typography>
+            <Typography>{pmRejectionComment}</Typography>
+          </Box>
+          <Box sx={{ marginBottom: 3 }}>
+            <Typography variant="h6" color="primary" gutterBottom>
+              User Resubmission Comment:
+            </Typography>
+            <Typography>{userResubmissionComment}</Typography>
+          </Box>
+
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Typography variant="h6">Task Description:</Typography>
@@ -166,10 +188,12 @@ const PMServiceRequestDetails: React.FC = () => {
               <Typography>{serviceRequest?.numberOfOffers || 'N/A'}</Typography>
             </Grid>
             <Grid item xs={12}>
+              <Typography variant="h6">Number of Specialists:</Typography>
+              <Typography>{serviceRequest?.numberOfSpecialists || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12}>
               <Typography variant="h6">Representatives:</Typography>
-              <Typography>
-                {serviceRequest?.representatives?.join(', ') || 'N/A'}
-              </Typography>
+              <Typography>{serviceRequest?.representatives?.join(', ') || 'N/A'}</Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h6">Additional Information:</Typography>

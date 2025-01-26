@@ -30,6 +30,10 @@ import UserDraftServiceRequestList from '../pages/UserDraftServiceRequestList'; 
 import DraftManagement from '../pages/DraftManagement'; // New Draft Management Page
 import UserSubmittedServiceRequests from '../pages/UserSubmittedServiceRequests'; 
 import UserSubmittedServiceRequestDetails from '../pages/UserSubmittedServiceRequestDetails';
+import UserRejectedServiceRequestList from '../pages/UserRejectedServiceRequestList';
+import ManageRejectedRequest from '../pages/ManageRejectedRequest';
+import UserApprovedServiceRequests from '../pages/UserApprovedServiceRequests'; // Approved Requests List
+import UserApprovedServiceRequestDetails from '../pages/UserApprovedServiceRequestDetails'; // Approved Request Details
 
 
 const AppRoutes: React.FC = () => {
@@ -179,6 +183,22 @@ const AppRoutes: React.FC = () => {
       <Route
         path="/submitted-requests/:id"
          element={isLoggedIn && !isAdmin && !isPM ? <UserSubmittedServiceRequestDetails /> : <Navigate to="/login" />}
+        />
+        <Route
+        path="/user-rejected-requests"
+        element={isLoggedIn && !isAdmin && !isPM ? <UserRejectedServiceRequestList /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/rejected-requests/:id"
+           element={isLoggedIn && !isAdmin && !isPM ? <ManageRejectedRequest /> : <Navigate to="/login" />}
+        />
+      <Route
+          path="/user-approved-service-requests"
+          element={isLoggedIn && !isAdmin && !isPM ? <UserApprovedServiceRequests /> : <Navigate to="/login" />}
+            />
+      <Route
+         path="/user-approved-service-requests/:id"
+        element={isLoggedIn && !isAdmin && !isPM ? <UserApprovedServiceRequestDetails /> : <Navigate to="/login" />}
         />
       </Routes>
     </Router>

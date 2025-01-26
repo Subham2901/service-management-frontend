@@ -16,40 +16,36 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ParticlesBackground from '../components/ParticlesBackground';
-import PMHeader from '../components/PMHeader';
+import Header from '../components/Header';
 import axiosInstance from '../axiosConfig';
-import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-const AssignedServiceRequests: React.FC = () => {
-  const { token } = useAuth();
-  const navigate = useNavigate();
+const UserApprovedServiceRequests: React.FC = () => {
   const [serviceRequests, setServiceRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchAssignedRequests = async () => {
+    const fetchApprovedRequests = async () => {
       try {
-        const response = await axiosInstance.get('/service-requests/assigned');
+        const response = await axiosInstance.get('/service-requests/user-requests/published');
         setServiceRequests(response.data || []);
       } catch (err) {
-        console.error('Failed to fetch assigned service requests:', err);
-        setError('Failed to load assigned service requests. Please try again.');
+        console.error('Failed to fetch approved service requests:', err);
+        setError('Failed to load approved service requests. Please try again.');
       } finally {
         setLoading(false);
       }
     };
 
-    if (token) {
-      fetchAssignedRequests();
-    }
-  }, [token]);
+    fetchApprovedRequests();
+  }, []);
 
   if (loading) {
     return (
       <Container>
-        <PMHeader />
+        <Header />
         <ParticlesBackground id="particles" />
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
           <CircularProgress />
@@ -61,7 +57,7 @@ const AssignedServiceRequests: React.FC = () => {
   if (error) {
     return (
       <Container>
-        <PMHeader />
+        <Header />
         <ParticlesBackground id="particles" />
         <Box
           sx={{
@@ -83,7 +79,7 @@ const AssignedServiceRequests: React.FC = () => {
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'auto' }}>
-      <PMHeader />
+      <Header />
       <ParticlesBackground id="particles" />
       <Container
         maxWidth="lg"
@@ -96,11 +92,10 @@ const AssignedServiceRequests: React.FC = () => {
           boxShadow: 3,
         }}
       >
-        {/* Back Button */}
         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
           <IconButton
             color="primary"
-            onClick={() => navigate('/pm-service-request-list')}
+            onClick={() => navigate('/service-requests')}
             sx={{
               marginRight: 2,
               backgroundColor: '#1e2f97',
@@ -111,12 +106,12 @@ const AssignedServiceRequests: React.FC = () => {
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h5" sx={{ color: '#1e2f97', fontWeight: 'bold' }}>
-            Assigned Service Requests
+            Approved Service Requests
           </Typography>
         </Box>
 
         {serviceRequests.length === 0 ? (
-          <Typography align="center">No assigned service requests found.</Typography>
+          <Typography align="center">No approved service requests found.</Typography>
         ) : (
           <TableContainer component={Paper}>
             <Table>
@@ -162,7 +157,7 @@ const AssignedServiceRequests: React.FC = () => {
               </TableHead>
               <TableBody>
                 {serviceRequests.map((request) => (
-                  <TableRow key={request.ServiceRequestId}>
+                  <TableRow key={request._id}>
                     <TableCell>{request.taskDescription}</TableCell>
                     <TableCell>{request.project}</TableCell>
                     <TableCell>{request.type}</TableCell>
@@ -170,8 +165,7 @@ const AssignedServiceRequests: React.FC = () => {
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => navigate(`/pm-assigned-requests/${request.ServiceRequestId}`)}
-                        sx={{ marginRight: 1 }}
+                        onClick={() => navigate(`/user-approved-service-requests/${request._id}`)}
                       >
                         View Details
                       </Button>
@@ -187,4 +181,4 @@ const AssignedServiceRequests: React.FC = () => {
   );
 };
 
-export default AssignedServiceRequests;
+export default UserApprovedServiceRequests;

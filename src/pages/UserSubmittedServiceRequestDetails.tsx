@@ -158,15 +158,27 @@ const UserSubmittedServiceRequestDetails: React.FC = () => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Typography variant="subtitle1" fontWeight="bold">
+                  Number of Offers:
+                </Typography>
+                <Typography>{serviceRequest.numberOfOffers || 'N/A'}</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Amount of Man Days:
+                </Typography>
+                <Typography>{serviceRequest.amountOfManDays || 'N/A'}</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle1" fontWeight="bold">
                   Status:
                 </Typography>
                 <Typography>{serviceRequest.status || 'N/A'}</Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <Typography variant="subtitle1" fontWeight="bold">
-                  Cycle Status:
+                  Information for Provider Manager:
                 </Typography>
-                <Typography>{serviceRequest.cycleStatus || 'N/A'}</Typography>
+                <Typography>{serviceRequest.informationForProviderManager || 'N/A'}</Typography>
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="subtitle1" fontWeight="bold">
@@ -191,7 +203,7 @@ const UserSubmittedServiceRequestDetails: React.FC = () => {
                 <ul>
                   {serviceRequest.selectedMembers?.map((member: any, index: number) => (
                     <li key={index}>
-                      {member.role} ({member.level}) - {member.domainName}
+                      {member.role} ({member.level}) - {member.domainName}, Profiles Needed: {member.numberOfProfilesNeeded || 'N/A'}
                     </li>
                   ))}
                 </ul>

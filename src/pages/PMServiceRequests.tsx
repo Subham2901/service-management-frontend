@@ -101,7 +101,7 @@ const PMServiceRequests: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
           <IconButton
             color="primary"
-            onClick={() => navigate('/pm/dashboard')} // Adjust the navigation path as needed
+            onClick={() => navigate('/pm-service-request-list')} // Adjust the navigation path as needed
             sx={{
               marginRight: 2,
               backgroundColor: '#1e2f97',

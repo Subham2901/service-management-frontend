@@ -27,15 +27,12 @@ const ApprovedServiceRequestDetails: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('Fetching details for Service Request ID:', id);
     const fetchRequestDetails = async () => {
       try {
         const response = await axiosInstance.get(`/service-requests/${id}/details`);
-        console.log('API Response:', response.data);
         setServiceRequest(response.data);
         setError(null);
       } catch (err) {
-        console.error('Failed to fetch service request details:', err);
         setError('Failed to load service request details. Please try again.');
       } finally {
         setLoading(false);
@@ -47,12 +44,7 @@ const ApprovedServiceRequestDetails: React.FC = () => {
     }
   }, [id]);
 
-  console.log('Loading State:', loading);
-  console.log('Error State:', error);
-  console.log('Service Request State:', serviceRequest);
-
   if (loading) {
-    console.log('Rendering Loading State');
     return (
       <Container>
         <PMHeader />
@@ -65,7 +57,6 @@ const ApprovedServiceRequestDetails: React.FC = () => {
   }
 
   if (error) {
-    console.log('Rendering Error State');
     return (
       <Container>
         <PMHeader />
@@ -90,8 +81,6 @@ const ApprovedServiceRequestDetails: React.FC = () => {
       </Container>
     );
   }
-
-  console.log('Rendering Service Request Details:', serviceRequest);
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'auto' }}>
@@ -120,42 +109,83 @@ const ApprovedServiceRequestDetails: React.FC = () => {
         >
           Approved Service Request Details
         </Typography>
-        <Paper
-          sx={{
-            padding: 3,
-            marginBottom: 3,
-            backgroundColor: '#f9f9f9',
-            borderRadius: 2,
-          }}
-        >
+        <Paper sx={{ padding: 3, marginBottom: 3, backgroundColor: '#f9f9f9', borderRadius: 2 }}>
           <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Agreement ID:</Typography>
+              <Typography>{serviceRequest?.agreementId || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Agreement Name:</Typography>
+              <Typography>{serviceRequest?.agreementName || 'N/A'}</Typography>
+            </Grid>
             <Grid item xs={12}>
               <Typography variant="h6">Task Description:</Typography>
-              <Typography>{serviceRequest?.taskDescription || 'No Task Description Available'}</Typography>
+              <Typography>{serviceRequest?.taskDescription || 'N/A'}</Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="h6">Project:</Typography>
-              <Typography>{serviceRequest?.project || 'No Project Information Available'}</Typography>
+              <Typography>{serviceRequest?.project || 'N/A'}</Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="h6">Type:</Typography>
-              <Typography>{serviceRequest?.type || 'No Type Information Available'}</Typography>
+              <Typography>{serviceRequest?.type || 'N/A'}</Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="h6">Start Date:</Typography>
               <Typography>
-                {serviceRequest?.begin ? new Date(serviceRequest?.begin).toLocaleDateString() : 'No Start Date Available'}
+                {serviceRequest?.begin ? new Date(serviceRequest?.begin).toLocaleDateString() : 'N/A'}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="h6">End Date:</Typography>
               <Typography>
-                {serviceRequest?.end ? new Date(serviceRequest?.end).toLocaleDateString() : 'No End Date Available'}
+                {serviceRequest?.end ? new Date(serviceRequest?.end).toLocaleDateString() : 'N/A'}
               </Typography>
             </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Man Days:</Typography>
+              <Typography>{serviceRequest?.amountOfManDays || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Location:</Typography>
+              <Typography>{serviceRequest?.location || 'N/A'}</Typography>
+            </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6">Additional Information:</Typography>
-              <Typography>{serviceRequest?.informationForProviderManager || 'No Additional Information Available'}</Typography>
+              <Typography variant="h6">Information for Provider Manager:</Typography>
+              <Typography>{serviceRequest?.informationForProviderManager || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Number of Specialists:</Typography>
+              <Typography>{serviceRequest?.numberOfSpecialists || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Number of Offers:</Typography>
+              <Typography>{serviceRequest?.numberOfOffers || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Consumer:</Typography>
+              <Typography>{serviceRequest?.consumer || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Location Type:</Typography>
+              <Typography>{serviceRequest?.locationType || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Status:</Typography>
+              <Typography>{serviceRequest?.status || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Provider Manager ID:</Typography>
+              <Typography>{serviceRequest?.providerManagerId || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Cycle Status:</Typography>
+              <Typography>{serviceRequest?.cycleStatus || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Created By:</Typography>
+              <Typography>{serviceRequest?.createdBy || 'N/A'}</Typography>
             </Grid>
           </Grid>
         </Paper>
@@ -201,20 +231,40 @@ const ApprovedServiceRequestDetails: React.FC = () => {
                 >
                   Level
                 </TableCell>
+                <TableCell
+                  sx={{
+                    backgroundColor: '#1e2f97',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Technology Level
+                </TableCell>
+                <TableCell
+                  sx={{
+                    backgroundColor: '#1e2f97',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Profiles Needed
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {serviceRequest?.selectedMembers?.length > 0 ? (
                 serviceRequest.selectedMembers.map((member: any) => (
-                  <TableRow key={member.roleId}>
+                  <TableRow key={member._id}>
                     <TableCell>{member.domainName || 'N/A'}</TableCell>
                     <TableCell>{member.role || 'N/A'}</TableCell>
                     <TableCell>{member.level || 'N/A'}</TableCell>
+                    <TableCell>{member.technologyLevel || 'N/A'}</TableCell>
+                    <TableCell>{member.numberOfProfilesNeeded || 'N/A'}</TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={3} align="center">
+                  <TableCell colSpan={5} align="center">
                     No member information available.
                   </TableCell>
                 </TableRow>
@@ -222,6 +272,32 @@ const ApprovedServiceRequestDetails: React.FC = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        <Typography
+          variant="h5"
+          align="center"
+          gutterBottom
+          sx={{
+            color: '#1e2f97',
+            marginTop: 3,
+          }}
+        >
+          Notifications
+        </Typography>
+        <Paper sx={{ padding: 3, marginTop: 3, backgroundColor: '#f9f9f9', borderRadius: 2 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              {serviceRequest?.notifications?.length > 0 ? (
+                <ul>
+                  {serviceRequest.notifications.map((notification: string, index: number) => (
+                    <li key={index}>{notification}</li>
+                  ))}
+                </ul>
+              ) : (
+                <Typography>No notifications available.</Typography>
+              )}
+            </Grid>
+          </Grid>
+        </Paper>
         <Box sx={{ textAlign: 'center', marginTop: 3 }}>
           <Button
             variant="contained"

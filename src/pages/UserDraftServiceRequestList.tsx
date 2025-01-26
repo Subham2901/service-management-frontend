@@ -100,7 +100,7 @@ const UserDraftServiceRequestList: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
           <IconButton
             color="primary"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/service-requests')}
             sx={{
               marginRight: 2,
               backgroundColor: '#1e2f97',

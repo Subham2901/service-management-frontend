@@ -16,40 +16,40 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ParticlesBackground from '../components/ParticlesBackground';
-import PMHeader from '../components/PMHeader';
+import Header from '../components/Header';
 import axiosInstance from '../axiosConfig';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-const AssignedServiceRequests: React.FC = () => {
+const UserRejectedServiceRequestList: React.FC = () => {
   const { token } = useAuth();
   const navigate = useNavigate();
-  const [serviceRequests, setServiceRequests] = useState<any[]>([]);
+  const [rejectedRequests, setRejectedRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAssignedRequests = async () => {
+    const fetchRejectedRequests = async () => {
       try {
-        const response = await axiosInstance.get('/service-requests/assigned');
-        setServiceRequests(response.data || []);
+        const response = await axiosInstance.get('/service-requests/user-requests/rejected');
+        setRejectedRequests(response.data);
       } catch (err) {
-        console.error('Failed to fetch assigned service requests:', err);
-        setError('Failed to load assigned service requests. Please try again.');
+        console.error('Failed to fetch rejected service requests:', err);
+        setError('Failed to load rejected service requests. Please try again.');
       } finally {
         setLoading(false);
       }
     };
 
     if (token) {
-      fetchAssignedRequests();
+      fetchRejectedRequests();
     }
   }, [token]);
 
   if (loading) {
     return (
       <Container>
-        <PMHeader />
+        <Header />
         <ParticlesBackground id="particles" />
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
           <CircularProgress />
@@ -61,7 +61,7 @@ const AssignedServiceRequests: React.FC = () => {
   if (error) {
     return (
       <Container>
-        <PMHeader />
+        <Header />
         <ParticlesBackground id="particles" />
         <Box
           sx={{
@@ -83,7 +83,7 @@ const AssignedServiceRequests: React.FC = () => {
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'auto' }}>
-      <PMHeader />
+      <Header />
       <ParticlesBackground id="particles" />
       <Container
         maxWidth="lg"
@@ -100,7 +100,7 @@ const AssignedServiceRequests: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
           <IconButton
             color="primary"
-            onClick={() => navigate('/pm-service-request-list')}
+            onClick={() => navigate('/service-requests')}
             sx={{
               marginRight: 2,
               backgroundColor: '#1e2f97',
@@ -111,12 +111,12 @@ const AssignedServiceRequests: React.FC = () => {
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h5" sx={{ color: '#1e2f97', fontWeight: 'bold' }}>
-            Assigned Service Requests
+            Rejected Service Requests
           </Typography>
         </Box>
 
-        {serviceRequests.length === 0 ? (
-          <Typography align="center">No assigned service requests found.</Typography>
+        {rejectedRequests.length === 0 ? (
+          <Typography align="center">No rejected service requests found.</Typography>
         ) : (
           <TableContainer component={Paper}>
             <Table>
@@ -147,7 +147,7 @@ const AssignedServiceRequests: React.FC = () => {
                       fontWeight: 'bold',
                     }}
                   >
-                    Type
+                    Rejection Comments
                   </TableCell>
                   <TableCell
                     sx={{
@@ -161,19 +161,30 @@ const AssignedServiceRequests: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {serviceRequests.map((request) => (
+                {rejectedRequests.map((request) => (
                   <TableRow key={request.ServiceRequestId}>
-                    <TableCell>{request.taskDescription}</TableCell>
-                    <TableCell>{request.project}</TableCell>
-                    <TableCell>{request.type}</TableCell>
+                    <TableCell>{request.taskDescription || 'N/A'}</TableCell>
+                    <TableCell>{request.project || 'N/A'}</TableCell>
+                    <TableCell>
+                 {request.notifications
+                    .filter((note: string) => note.includes('Rejected'))
+                     .map((note: string, index: number) => {
+                     const match = note.match(/Comment: (.*)/);
+                     const comment = match ? match[1] : 'No comment provided';
+                    return (
+                    <Typography key={index}>{comment}</Typography>
+                    );
+                     })}
+                    </TableCell>
+
                     <TableCell>
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => navigate(`/pm-assigned-requests/${request.ServiceRequestId}`)}
+                        onClick={() => navigate(`/rejected-requests/${request.ServiceRequestId}`)}
                         sx={{ marginRight: 1 }}
                       >
-                        View Details
+                        View
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -187,4 +198,4 @@ const AssignedServiceRequests: React.FC = () => {
   );
 };
 
-export default AssignedServiceRequests;
+export default UserRejectedServiceRequestList;

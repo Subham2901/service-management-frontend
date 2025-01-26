@@ -162,6 +162,10 @@ const AssignedServiceRequestDetails: React.FC = () => {
         >
           <Grid container spacing={2}>
             <Grid item xs={12}>
+              <Typography variant="h6">Agreement Name:</Typography>
+              <Typography>{serviceRequest?.agreementName || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12}>
               <Typography variant="h6">Task Description:</Typography>
               <Typography>{serviceRequest?.taskDescription || 'N/A'}</Typography>
             </Grid>
@@ -181,9 +185,29 @@ const AssignedServiceRequestDetails: React.FC = () => {
               <Typography variant="h6">End Date:</Typography>
               <Typography>{new Date(serviceRequest?.end).toLocaleDateString() || 'N/A'}</Typography>
             </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Amount of Man Days:</Typography>
+              <Typography>{serviceRequest?.amountOfManDays || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Number of Specialists:</Typography>
+              <Typography>{serviceRequest?.numberOfSpecialists || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Number of Offers:</Typography>
+              <Typography>{serviceRequest?.numberOfOffers || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">Location:</Typography>
+              <Typography>{serviceRequest?.location || 'N/A'}</Typography>
+            </Grid>
             <Grid item xs={12}>
               <Typography variant="h6">Additional Information:</Typography>
               <Typography>{serviceRequest?.informationForProviderManager || 'N/A'}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Consumer:</Typography>
+              <Typography>{serviceRequest?.consumer || 'N/A'}</Typography>
             </Grid>
           </Grid>
         </Paper>
@@ -229,12 +253,30 @@ const AssignedServiceRequestDetails: React.FC = () => {
                 >
                   Level
                 </TableCell>
+                <TableCell
+                  sx={{
+                    backgroundColor: '#1e2f97',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Technology Level
+                </TableCell>
+                <TableCell
+                  sx={{
+                    backgroundColor: '#1e2f97',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Number of Profiles Needed
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {serviceRequest?.selectedMembers?.map((member: any) => (
                 <TableRow
-                  key={member.roleId}
+                  key={member._id}
                   sx={{
                     ':hover': {
                       backgroundColor: '#f1f1f1',
@@ -244,6 +286,8 @@ const AssignedServiceRequestDetails: React.FC = () => {
                   <TableCell>{member.domainName}</TableCell>
                   <TableCell>{member.role}</TableCell>
                   <TableCell>{member.level}</TableCell>
+                  <TableCell>{member.technologyLevel}</TableCell>
+                  <TableCell>{member.numberOfProfilesNeeded}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

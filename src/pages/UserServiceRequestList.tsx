@@ -80,32 +80,33 @@ const UserServiceRequestList: React.FC = () => {
             </Card>
           </Grid>
 
+          {/* Submitted Service Requests */}
           <Grid item xs={12} sm={6} md={4}>
-  <Card
-    sx={{
-      boxShadow: 3,
-      cursor: 'pointer',
-      backgroundColor: '#1e2f97',
-      color: '#fff',
-      ':hover': {
-        boxShadow: 6,
-        transform: 'scale(1.05)',
-        transition: 'all 0.2s ease-in-out',
-        backgroundColor: '#1b2786',
-      },
-    }}
-    onClick={() => navigate('/user-submitted-requests')}
-  >
-    <CardContent>
-      <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-        Submitted Service Requests
-      </Typography>
-      <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
-        Track service requests you've submitted.
-      </Typography>
-    </CardContent>
-  </Card>
-</Grid>
+            <Card
+              sx={{
+                boxShadow: 3,
+                cursor: 'pointer',
+                backgroundColor: '#1e2f97',
+                color: '#fff',
+                ':hover': {
+                  boxShadow: 6,
+                  transform: 'scale(1.05)',
+                  transition: 'all 0.2s ease-in-out',
+                  backgroundColor: '#1b2786',
+                },
+              }}
+              onClick={() => navigate('/user-submitted-requests')}
+            >
+              <CardContent>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                  Submitted Service Requests
+                </Typography>
+                <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
+                  Track service requests you've submitted.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
           {/* Rejected Service Requests */}
           <Grid item xs={12} sm={6} md={4}>
@@ -122,17 +123,42 @@ const UserServiceRequestList: React.FC = () => {
                   backgroundColor: '#1b2786',
                 },
               }}
-              onClick={() => {
-                alert('This feature is under development.'); // Placeholder for user-rejected
-                // navigate('/user-rejected'); Uncomment when implemented
-              }}
+              onClick={() => navigate('/user-rejected-requests')}
             >
               <CardContent>
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
                   Rejected Service Requests
                 </Typography>
                 <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
-                  View feedback on rejected service requests and resubmit.
+                  Resubmit rejected service requests.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Approved Service Requests */}
+          <Grid item xs={12} sm={6} md={4}>
+            <Card
+              sx={{
+                boxShadow: 3,
+                cursor: 'pointer',
+                backgroundColor: '#1e2f97',
+                color: '#fff',
+                ':hover': {
+                  boxShadow: 6,
+                  transform: 'scale(1.05)',
+                  transition: 'all 0.2s ease-in-out',
+                  backgroundColor: '#1b2786',
+                },
+              }}
+              onClick={() => navigate('/user-approved-service-requests')}
+            >
+              <CardContent>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                  Approved Service Requests
+                </Typography>
+                <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
+                  View all approved service requests.
                 </Typography>
               </CardContent>
             </Card>

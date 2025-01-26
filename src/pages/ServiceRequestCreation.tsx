@@ -153,6 +153,15 @@ const handleMemberChange = (
   };
 
   const handleTypeChange = (type: string) => {
+    if (type === 'Team') {
+      // Check if the total number of unique role details across all domains is less than 2
+      const totalRoleDetails = agreementDetails.reduce((count: number, domain: { roleDetails: any[] }) => count + domain.roleDetails.length, 0);
+      if (totalRoleDetails < 2) {
+        alert('The "Team" type cannot be selected because only one role detail is available in the master agreement.');
+        return;
+      }
+    }
+  
     if (type === 'Single') {
       setFormData((prev) => ({
         ...prev,
@@ -186,7 +195,7 @@ const handleMemberChange = (
           },
         ],
       }));
-      setNumberOfSpecialists(1);
+      setNumberOfSpecialists(2);
     } else {
       setFormData((prev) => ({
         ...prev,
@@ -206,6 +215,8 @@ const handleMemberChange = (
       setNumberOfSpecialists(0);
     }
   };
+  
+  
 
   const addMember = () => {
     setFormData((prev) => ({

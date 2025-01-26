@@ -95,18 +95,7 @@ const AdminHeader: React.FC = () => {
           >
             Manage Users
           </Button>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/admin/reports"
-            sx={{
-              marginX: 1,
-              backgroundColor: isActive('/admin/reports') ? '#2E3B8E' : 'transparent',
-              ':hover': { backgroundColor: '#2E3B8E', borderRadius: 1 },
-            }}
-          >
-            Reports
-          </Button>
+          
           <IconButton color="inherit" onClick={handleMenuOpen} aria-label="Account Menu">
             <AccountCircleIcon />
           </IconButton>
