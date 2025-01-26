@@ -28,6 +28,9 @@ import ApprovedServiceRequestDetails from '../pages/ApprovedServiceRequestDetail
 import UserServiceRequestList from '../pages/UserServiceRequestList';
 import UserDraftServiceRequestList from '../pages/UserDraftServiceRequestList'; // Draft List Page
 import DraftManagement from '../pages/DraftManagement'; // New Draft Management Page
+import UserSubmittedServiceRequests from '../pages/UserSubmittedServiceRequests'; 
+import UserSubmittedServiceRequestDetails from '../pages/UserSubmittedServiceRequestDetails';
+
 
 const AppRoutes: React.FC = () => {
   const { isLoggedIn, user } = useAuth();
@@ -168,6 +171,14 @@ const AppRoutes: React.FC = () => {
         <Route
           path="/drafts/:id"
           element={isLoggedIn && !isAdmin && !isPM ? <DraftManagement /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/user-submitted-requests" // New Route
+          element={isLoggedIn && !isAdmin && !isPM ? <UserSubmittedServiceRequests /> : <Navigate to="/login" />}
+        />
+      <Route
+        path="/submitted-requests/:id"
+         element={isLoggedIn && !isAdmin && !isPM ? <UserSubmittedServiceRequestDetails /> : <Navigate to="/login" />}
         />
       </Routes>
     </Router>

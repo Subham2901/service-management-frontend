@@ -80,36 +80,32 @@ const UserServiceRequestList: React.FC = () => {
             </Card>
           </Grid>
 
-          {/* Submitted Service Requests */}
           <Grid item xs={12} sm={6} md={4}>
-            <Card
-              sx={{
-                boxShadow: 3,
-                cursor: 'pointer',
-                backgroundColor: '#1e2f97',
-                color: '#fff',
-                ':hover': {
-                  boxShadow: 6,
-                  transform: 'scale(1.05)',
-                  transition: 'all 0.2s ease-in-out',
-                  backgroundColor: '#1b2786',
-                },
-              }}
-              onClick={() => {
-                alert('This feature is under development.'); // Placeholder for user-submitted
-                // navigate('/user-submitted'); Uncomment when implemented
-              }}
-            >
-              <CardContent>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                  Submitted Service Requests
-                </Typography>
-                <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
-                  Track service requests you've submitted.
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+  <Card
+    sx={{
+      boxShadow: 3,
+      cursor: 'pointer',
+      backgroundColor: '#1e2f97',
+      color: '#fff',
+      ':hover': {
+        boxShadow: 6,
+        transform: 'scale(1.05)',
+        transition: 'all 0.2s ease-in-out',
+        backgroundColor: '#1b2786',
+      },
+    }}
+    onClick={() => navigate('/user-submitted-requests')}
+  >
+    <CardContent>
+      <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+        Submitted Service Requests
+      </Typography>
+      <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
+        Track service requests you've submitted.
+      </Typography>
+    </CardContent>
+  </Card>
+</Grid>
 
           {/* Rejected Service Requests */}
           <Grid item xs={12} sm={6} md={4}>
