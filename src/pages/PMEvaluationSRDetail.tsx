@@ -21,16 +21,14 @@ import ParticlesBackground from '../components/ParticlesBackground';
 import Header from '../components/Header';
 import axiosInstance from '../axiosConfig';
 
-const UserApprovedServiceRequestDetails: React.FC = () => {
+const PMEvaluationSRDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [serviceRequest, setServiceRequest] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [offersError, setOffersError] = useState<string | null>(null);
-  const [memberStatusMessages, setMemberStatusMessages] = useState<string[]>([]);
+
   const navigate = useNavigate();
-  const [generatingOffers, setGeneratingOffers] = useState<boolean>(false);
-  const [canViewOffers, setCanViewOffers] = useState<boolean>(false);
+  //const [generatingOffers, setGeneratingOffers] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchRequestDetails = async () => {
@@ -49,33 +47,6 @@ const UserApprovedServiceRequestDetails: React.FC = () => {
     fetchRequestDetails();
   }, [id]);
 
-  // To generate the offers for the service request
-  const handleGenerateOffers = async () => {
-    setGeneratingOffers(true); // Start loading state
-    setOffersError(null); // Clear previous error
-    setMemberStatusMessages([]); // Clear previous member status messages
-    try {
-      const response = await axiosInstance.post('/offers/generate', {
-        serviceRequestId: id, // Pass the required service request ID
-      });
-      console.log('Offers generated successfully:', response.data); // Debug log
-      if (response.data.memberStatuses && response.data.memberStatuses.length > 0) {
-        const messages = response.data.memberStatuses.map((status: any) => status.message);
-        setMemberStatusMessages(messages);
-      } else {
-        setOffersError(null); // Clear any previous error
-        setCanViewOffers(true); // Enable the view offers button
-      }
-    } catch (err: any) {
-      console.error('Failed to generate offers:', err.response?.data || err); // Debug log for errors
-      setOffersError(
-        err.response?.data?.message || 'Failed to generate offers. Please try again.'
-      );
-      setCanViewOffers(false); // Disable the view offers button
-    } finally {
-      setGeneratingOffers(false); // End loading state
-    }
-  };
 
   if (loading) {
     return (
@@ -141,7 +112,7 @@ const UserApprovedServiceRequestDetails: React.FC = () => {
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h5" sx={{ color: '#1e2f97', fontWeight: 'bold' }}>
-            Approved Service Request Details
+            PM Evaluation Service Request Details
           </Typography>
         </Box>
         <Paper sx={{ padding: 4, marginBottom: 4 }}>
@@ -258,25 +229,7 @@ const UserApprovedServiceRequestDetails: React.FC = () => {
             <Typography>No notifications available.</Typography>
           )}
         </Box>
-        {offersError && (
-          <Box sx={{ marginTop: 2 }}>
-            <Typography color="error">{offersError}</Typography>
-          </Box>
-        )}
-        {memberStatusMessages.length > 0 && (
-          <Box sx={{ marginTop: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Member Status Messages:
-            </Typography>
-            <ul>
-              {memberStatusMessages.map((message, index) => (
-                <li key={index}>
-                  <Typography>{message}</Typography>
-                </li>
-              ))}
-            </ul>
-          </Box>
-        )}
+
         <Box sx={{ textAlign: 'center', marginTop: 3 }}>
           <Button
             variant="contained"
@@ -285,37 +238,25 @@ const UserApprovedServiceRequestDetails: React.FC = () => {
               marginRight: 2,
               ':hover': { backgroundColor: '#1b2786' },
             }}
-            onClick={() => navigate('/user-approved-service-requests')}
+            onClick={() => navigate('/PM-Evaluation-SR')}
           >
             Back to List
           </Button>
           <Button
-            variant="contained"
-            sx={{
-              backgroundColor: '#1e2f97',
-              marginRight: 2,
-              ':hover': { backgroundColor: '#1b2786' },
-            }}
-            onClick={handleGenerateOffers}
-            disabled={generatingOffers}
-          >
-            {generatingOffers ? 'Generating Offers...' : 'Generate Offers'}
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: '#1e2f97',
-              ':hover': { backgroundColor: '#1b2786' },
-            }}
-            onClick={() => navigate(`/service-requests/${id}/offers`)}
-            disabled={!canViewOffers}
-          >
-            View Offers
-          </Button>
+          variant="contained"
+                      sx={{
+                        backgroundColor: '#1e2f97',
+                        ':hover': { backgroundColor: '#1b2786' },
+                      }}
+                      onClick={() => navigate(`/PM-Evaluation/${id}/offers`)}
+                    >
+                      View Offers
+                    </Button>
+          
         </Box>
       </Container>
     </div>
   );
 };
 
-export default UserApprovedServiceRequestDetails;
+export default PMEvaluationSRDetail;

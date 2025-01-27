@@ -24,6 +24,10 @@ import AssignedServiceRequestDetails from '../pages/AssignedServiceRequestDetail
 import ApprovedServiceRequests from '../pages/ApprovedServiceRequests';
 import ApprovedServiceRequestDetails from '../pages/ApprovedServiceRequestDetails';
 
+import PMEvaluationSR from '../pages/PMEvaluationSR';
+
+import PMEvaluationSRDetail from '../pages/PMEvaluationSRDetail';
+
 // New User Pages
 import UserServiceRequestList from '../pages/UserServiceRequestList';
 import UserDraftServiceRequestList from '../pages/UserDraftServiceRequestList'; // Draft List Page
@@ -34,6 +38,10 @@ import UserRejectedServiceRequestList from '../pages/UserRejectedServiceRequestL
 import ManageRejectedRequest from '../pages/ManageRejectedRequest';
 import UserApprovedServiceRequests from '../pages/UserApprovedServiceRequests'; // Approved Requests List
 import UserApprovedServiceRequestDetails from '../pages/UserApprovedServiceRequestDetails'; // Approved Request Details
+
+// Offer Related Pages
+import ViewOffers from '../pages/offers/ViewOffers';
+import ViewPMOffer from '../pages/offers/ViewPMOffer';
 
 
 const AppRoutes: React.FC = () => {
@@ -142,6 +150,20 @@ const AppRoutes: React.FC = () => {
           path="/pm-approved-requests/:id"
           element={isLoggedIn && isPM ? <ApprovedServiceRequestDetails /> : <Navigate to="/login" />}
         />
+        <Route
+          path="/PM-Evaluation-SR"
+          element={isLoggedIn && isPM ? <PMEvaluationSR /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/PM-Evaluation-service-requests/:id"
+          element={isLoggedIn && isPM ? <PMEvaluationSRDetail /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/PM-Evaluation/:id/offers"
+          element={isLoggedIn && !isAdmin && isPM ? <ViewPMOffer /> : <Navigate to="/login" />}
+        />
+
+
 
         {/* User Routes */}
         <Route
@@ -199,6 +221,10 @@ const AppRoutes: React.FC = () => {
       <Route
          path="/user-approved-service-requests/:id"
         element={isLoggedIn && !isAdmin && !isPM ? <UserApprovedServiceRequestDetails /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/service-requests/:id/offers"
+          element={isLoggedIn && !isAdmin && !isPM ? <ViewOffers /> : <Navigate to="/login" />}
         />
       </Routes>
     </Router>
