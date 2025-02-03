@@ -136,7 +136,7 @@ const UserServiceRequestList: React.FC = () => {
             </Card>
           </Grid>
 
-          {/* Approved Service Requests */}
+          {/* Approved or PM Evaluation Service Requests */}
           <Grid item xs={12} sm={6} md={4}>
             <Card
               sx={{
@@ -155,10 +155,36 @@ const UserServiceRequestList: React.FC = () => {
             >
               <CardContent>
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                  Approved Service Requests
+                Approved or PM Evaluation Service Requests
                 </Typography>
                 <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
                   View all approved service requests.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Card
+              sx={{
+                boxShadow: 3,
+                cursor: 'pointer',
+                backgroundColor: '#1e2f97',
+                color: '#fff',
+                ':hover': {
+                  boxShadow: 6,
+                  transform: 'scale(1.05)',
+                  transition: 'all 0.2s ease-in-out',
+                  backgroundColor: '#1b2786',
+                },
+              }}
+              onClick={() => navigate('/user-PMEvaluation-service-requests')}
+            >
+              <CardContent>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                  Re-Evaluation Service Requests
+                </Typography>
+                <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
+                  View all  service requests sent  by PM for User Re-Evaluation.
                 </Typography>
               </CardContent>
             </Card>

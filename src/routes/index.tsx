@@ -38,11 +38,14 @@ import UserRejectedServiceRequestList from '../pages/UserRejectedServiceRequestL
 import ManageRejectedRequest from '../pages/ManageRejectedRequest';
 import UserApprovedServiceRequests from '../pages/UserApprovedServiceRequests'; // Approved Requests List
 import UserApprovedServiceRequestDetails from '../pages/UserApprovedServiceRequestDetails'; // Approved Request Details
+import UserPMEvaluationServiceRequest from '../pages/UserPMEvaluationServiceRequest'; // PM Evaluation Service Request List
+import UserPMEvaluationdetails from '../pages/UserPMEvaluationdetails'; // PM Evaluation Service Request Details
+
 
 // Offer Related Pages
 import ViewOffers from '../pages/offers/ViewOffers';
 import ViewPMOffer from '../pages/offers/ViewPMOffer';
-
+import UserPMvaluationoffer from '../pages/offers/UserPMevaluationoffer';
 
 const AppRoutes: React.FC = () => {
   const { isLoggedIn, user } = useAuth();
@@ -226,7 +229,20 @@ const AppRoutes: React.FC = () => {
           path="/service-requests/:id/offers"
           element={isLoggedIn && !isAdmin && !isPM ? <ViewOffers /> : <Navigate to="/login" />}
         />
+              <Route
+          path="/user-PMEvaluation-service-requests"
+          element={isLoggedIn && !isAdmin && !isPM ? <UserPMEvaluationServiceRequest /> : <Navigate to="/login" />}
+            />
+      <Route
+         path="/user-PMEvaluation-service-requests/:id"
+        element={isLoggedIn && !isAdmin && !isPM ? <UserPMEvaluationdetails /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/user-PMEvaluation-service-requests/:id/useroffers"
+          element={isLoggedIn && !isAdmin && !isPM ? <UserPMvaluationoffer/> : <Navigate to="/login" />}
+        />
       </Routes>
+      
     </Router>
   );
 };

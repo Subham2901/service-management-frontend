@@ -14,6 +14,7 @@ import {
   IconButton,
   Collapse,
   Button,
+  TextField
 } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -26,6 +27,8 @@ const ViewPMOffer: React.FC = () => {
   const [offers, setOffers] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [comment, setComment] = useState<string>('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,6 +48,25 @@ const ViewPMOffer: React.FC = () => {
 
     fetchOffers();
   }, [id]);
+
+  const handleUpdateSRStatus = async () => {
+    if (!comment.trim()) {
+      alert('Please enter a comment before submitting.');
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      await axiosInstance.patch(`/offers/${id}/status`, { status: 'UserOfferReEvaluation', comment: `PM: ${comment}` });
+      alert('Service request status updated to UserOfferReEvaluation');
+      navigate('/pm-evaluation-sr');
+    } catch (err) {
+      alert('Failed to update status. Please try again.');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
 
   if (loading) {
     return (
@@ -119,7 +141,28 @@ const ViewPMOffer: React.FC = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        <Box sx={{ marginTop: 4, textAlign: 'center' }}>
+          <TextField
+            label="Enter Comment"
+            variant="outlined"
+            fullWidth
+            multiline
+            rows={3}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            sx={{ marginBottom: 2 }}
+          />
+                    <Button
+            variant="contained"
+            sx={{ backgroundColor: '#1e2f97', ':hover': { backgroundColor: '#1b2786' } }}
+            disabled={isUpdating}
+            onClick={handleUpdateSRStatus}
+          >
+            {isUpdating ? 'Updating...' : 'Request User Re-Evaluation'}
+          </Button>
+        </Box>
         <Box sx={{ marginTop: 4 }}>
+
           <Button
             variant="contained"
             sx={{ backgroundColor: '#1e2f97', ':hover': { backgroundColor: '#1b2786' } }}
@@ -134,36 +177,8 @@ const ViewPMOffer: React.FC = () => {
 };
 
 const ExpandableRow: React.FC<{ offer: any }> = ({ offer }) => {
+
   const [open, setOpen] = useState(false);
-  const [comment, setComment] = useState<string>('');
-  const [loading, setLoading] = useState(false);
-
-  const handleAction = async (action: 'approve' | 'revise') => {
-    if (!comment.trim()) {
-      alert('Comment is required.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const url = action === 'approve' ? `/offers/${offer._id}/evaluate` : `/offers/${offer._id}/revise`;
-      const body = action === 'approve' 
-        ? { status: 'Approved', comment }
-        : { comment };
-
-      console.log(`Sending request to ${url} with body:`, body);
-
-      const response = await axiosInstance.patch(url, body);
-      console.log(`${action} Response:`, response.data);
-
-      alert(`Offer ${action === 'approve' ? 'approved' : 'revision requested'} successfully.`);
-    } catch (err) {
-      console.error('Action failed:', err);
-      alert(`Failed to ${action} offer. Please try again.`);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <>
@@ -206,42 +221,6 @@ const ExpandableRow: React.FC<{ offer: any }> = ({ offer }) => {
                   ))}
                 </TableBody>
               </Table>
-              <Box mt={2}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Add Comment
-                </Typography>
-                <textarea
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Add your comment here..."
-                  style={{
-                    width: '100%',
-                    height: '60px',
-                    padding: '10px',
-                    borderRadius: '5px',
-                    border: '1px solid #ccc',
-                    resize: 'none',
-                  }}
-                />
-                <Box mt={2} display="flex" gap={2}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={loading}
-                    onClick={() => handleAction('approve')}
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    disabled={loading}
-                    onClick={() => handleAction('revise')}
-                  >
-                    Request Revision
-                  </Button>
-                </Box>
-              </Box>
             </Box>
           </Collapse>
         </TableCell>

@@ -15,7 +15,8 @@ import {
   IconButton,
   Collapse,
   Snackbar,
-  Alert      
+  Alert,
+  TextField      
 } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -23,30 +24,43 @@ import Header from '../../components/Header';
 import ParticlesBackground from '../../components/ParticlesBackground';
 import axiosInstance from '../../axiosConfig';
 
-const ViewOffers: React.FC = () => {
+const UserPMevaluationoffer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [offers, setOffers] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [comment, setComment] = useState<string>('');
   const navigate = useNavigate();
-
+  const [serviceRequestStatus, setServiceRequestStatus] = useState<string | null>(null);
   useEffect(() => {
     const fetchOffers = async () => {
       try {
         const response = await axiosInstance.get(`/offers/${id}`);
-        console.log('Fetched offers:', response.data);
         setOffers(response.data);
         setError(null);
       } catch (err) {
-        console.error('Failed to fetch offers:', err);
         setError('Failed to load offers. Please try again.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchOffers();
-  }, [id]);
+    const fetchServiceRequestStatus = async () => {
+      try {
+        const response = await axiosInstance.get(`/service-requests/${id}`);
+        setServiceRequestStatus(response.data.status);
+      } catch (err) {
+        console.error('Failed to fetch service request status:', err);
+      }
+    };
+
+    fetchOffers(); // Fetches offers data
+    fetchServiceRequestStatus(); // Fetches service request status
+}, [id]); // Runs when `id` changes
+
+  
+
+
 
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
@@ -86,23 +100,32 @@ const ViewOffers: React.FC = () => {
     return atLeastOneSelected && allMembersWithOffersHaveSelection;
   };
   
+  const [isSending, setIsSending] = useState(false);
+
   const handleSendForPmEvaluation = async () => {
-    if (!canSendForPmEvaluation()) return;
+    if (!canSendForPmEvaluation() ) return;
+    else if(!comment.trim()){
+      alert('Please enter a comment before submitting.');
+      return;
+    }
+  
+    setIsSending(true); // Disable button immediately
   
     try {
-      await axiosInstance.patch(`/offers/${id}/send-for-pm-evaluation`);
-      
+      await axiosInstance.patch(`/offers/${id}/status`, { status: 'PmOfferEvaluation', comment: `Requester: ${comment}` });
+  
       setSnackbar({
         open: true,
         message: 'Service request sent for PM evaluation successfully!',
         severity: 'success',
       });
   
-      // Navigate to user-approved-service-requests after a short delay
-      setTimeout(() => {
-        navigate(`/user-approved-service-requests`);
-      }, 1500); // Delay to allow Snackbar to show success message
+      // ✅ Update the status immediately in state
+      setServiceRequestStatus("PmOfferEvaluation");
   
+      setTimeout(() => {
+        navigate(`/user-PMEvaluation-service-requests`);
+      }, 1500);
     } catch (err) {
       console.error('Failed to send for PM evaluation:', err);
       setSnackbar({
@@ -110,32 +133,15 @@ const ViewOffers: React.FC = () => {
         message: 'Failed to send for PM evaluation. Please try again.',
         severity: 'error',
       });
+  
+      setIsSending(false); // Allow retry if request fails
     }
   };
   
+  
+  
 
-  const handleUpdateCycleAndFetchOffers = async () => {
-    setLoading(true); // Show a loading spinner
-    try {
-      // Step 1: Update cycleStatus to Cycle2
-      await axiosInstance.patch(`/offers/${id}/cycle-status`, {
-        cycleStatus: 'Cycle2',
-      });
-
-      // Step 2: Generate offers for the updated cycle
-      await axiosInstance.post('/offers/generate', { serviceRequestId: id });
-
-      // Step 3: Fetch updated offers
-      const response = await axiosInstance.get(`/offers/${id}`);
-      setOffers(response.data); // Update offers state
-      setError(null);
-    } catch (err) {
-      console.error('Failed to update cycle and fetch offers:', err);
-      setError('Failed to update cycle and fetch new offers. Please try again.');
-    } finally {
-      setLoading(false); // Hide the loading spinner
-    }
-  };
+  
 
   const handleSelectOffer = async (offer: any) => {
     try {
@@ -230,28 +236,34 @@ const ViewOffers: React.FC = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        <TextField
+          label="Enter Comment"
+          variant="outlined"
+          fullWidth
+          multiline
+          rows={3}
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          sx={{ marginBottom: 2 }}
+        />
         <Box sx={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
-  <Button
-    variant="contained"
-    sx={{ backgroundColor: '#1e2f97', ':hover': { backgroundColor: '#1b2786' } }}
-    onClick={handleUpdateCycleAndFetchOffers}
-  >
-    Generate Offers for Cycle 2
-  </Button>
   
-  <Button
-    variant="contained"
-    sx={{ backgroundColor: '#1e2f97', ':hover': { backgroundColor: '#1b2786' } }}
-    onClick={handleSendForPmEvaluation}
-    disabled={!canSendForPmEvaluation()}
-  >
-    Send for PM Evaluation
-  </Button>
+        <Button
+  variant="contained"
+  sx={{ backgroundColor: '#1e2f97', ':hover': { backgroundColor: '#1b2786' } }}
+  onClick={handleSendForPmEvaluation}
+  disabled={isSending || serviceRequestStatus === 'PmOfferEvaluation'}
+>
+  {isSending ? 'Processing...' : serviceRequestStatus === 'PmOfferEvaluation' ? 'Sent for PM Evaluation' : 'Send for PM Evaluation'}
+</Button>
+
+
+
 
   <Button
     variant="contained"
     sx={{ backgroundColor: '#1e2f97', ':hover': { backgroundColor: '#1b2786' } }}
-    onClick={() => navigate(`/user-approved-service-requests/${id}`)}
+    onClick={() => navigate(`/user-PMEvaluation-service-requests/${id}`)}
   >
     Back to Details
   </Button>
@@ -289,13 +301,14 @@ const ExpandableRow: React.FC<{ offer: any; handleSelectOffer: (offer: any) => v
         <TableCell>${offer.price ? offer.price.toFixed(2) : 'N/A'}</TableCell>
         <TableCell>{offer.cycle || 'N/A'}</TableCell>
         <TableCell>
-          <Button
+        <Button
   variant="contained"
   sx={{ backgroundColor: offer.status === 'Selected' ? '#d32f2f' : '#1e2f97', 
         ':hover': { backgroundColor: offer.status === 'Selected' ? '#b71c1c' : '#1b2786' } }}
   onClick={() => handleSelectOffer(offer)}
   disabled={isDisabled}
->
+    >
+     
   {offer.status === 'Selected' ? 'Deselect' : 'Select'}
 </Button>
 
@@ -332,4 +345,4 @@ const ExpandableRow: React.FC<{ offer: any; handleSelectOffer: (offer: any) => v
   );
 };
 
-export default ViewOffers;
+export default UserPMevaluationoffer;

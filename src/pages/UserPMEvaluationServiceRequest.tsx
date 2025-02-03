@@ -20,7 +20,7 @@ import Header from '../components/Header';
 import axiosInstance from '../axiosConfig';
 import { useNavigate } from 'react-router-dom';
 
-const PMEvaluationSR: React.FC = () => {
+const UserPMEvaluationServiceRequest: React.FC = () => {
   const [serviceRequests, setServiceRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,17 +29,7 @@ const PMEvaluationSR: React.FC = () => {
   useEffect(() => {
     const fetchApprovedRequests = async () => {
       try {
-        const token = localStorage.getItem('token'); // ✅ Get the JWT token from local storage
-        if (!token) {
-          setError('Unauthorized: No token found.');
-          setLoading(false);
-          return;
-        }
-  
-        const response = await axiosInstance.get('/service-requests/pm-requests/PmOfferEvaluation', {
-          headers: { Authorization: `Bearer ${token}` }, // ✅ Attach Authorization header
-        });
-  
+        const response = await axiosInstance.get('/service-requests/user-requests/UserOfferReEvaluation');
         setServiceRequests(response.data || []);
       } catch (err) {
         console.error('Failed to fetch approved service requests:', err);
@@ -48,10 +38,9 @@ const PMEvaluationSR: React.FC = () => {
         setLoading(false);
       }
     };
-  
+
     fetchApprovedRequests();
   }, []);
-  
 
   if (loading) {
     return (
@@ -106,7 +95,7 @@ const PMEvaluationSR: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
           <IconButton
             color="primary"
-            onClick={() => navigate('/pm-service-request-list')}
+            onClick={() => navigate('/service-requests')}
             sx={{
               marginRight: 2,
               backgroundColor: '#1e2f97',
@@ -117,12 +106,12 @@ const PMEvaluationSR: React.FC = () => {
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h5" sx={{ color: '#1e2f97', fontWeight: 'bold' }}>
-            PM Evaluation Service Requests
+            PM EValuation Service Requests
           </Typography>
         </Box>
 
         {serviceRequests.length === 0 ? (
-          <Typography align="center">No service requests found.</Typography>
+          <Typography align="center">No  service requests found sent for PM Evaluation.</Typography>
         ) : (
           <TableContainer component={Paper}>
             <Table>
@@ -176,7 +165,7 @@ const PMEvaluationSR: React.FC = () => {
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => navigate(`/Pm-Evaluation-service-requests/${request._id}`)}
+                        onClick={() => navigate(`/user-PMEvaluation-service-requests/${request._id}`)}
                       >
                         View Details
                       </Button>
@@ -192,4 +181,4 @@ const PMEvaluationSR: React.FC = () => {
   );
 };
 
-export default PMEvaluationSR;
+export default UserPMEvaluationServiceRequest;
