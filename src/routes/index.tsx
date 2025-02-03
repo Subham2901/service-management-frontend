@@ -47,6 +47,11 @@ import ViewOffers from '../pages/offers/ViewOffers';
 import ViewPMOffer from '../pages/offers/ViewPMOffer';
 import UserPMvaluationoffer from '../pages/offers/UserPMevaluationoffer';
 
+
+// 🔹 PM Orders Pages (New)
+import PMOrders from '../pages/PMOrders';
+import PMOrderDetails from '../pages/PMOrderDetails';
+
 const AppRoutes: React.FC = () => {
   const { isLoggedIn, user } = useAuth();
   const isAdmin = user?.role === 'admin';
@@ -165,6 +170,8 @@ const AppRoutes: React.FC = () => {
           path="/PM-Evaluation/:id/offers"
           element={isLoggedIn && !isAdmin && isPM ? <ViewPMOffer /> : <Navigate to="/login" />}
         />
+         <Route path="/pm-orders" element={isLoggedIn && isPM ? <PMOrders /> : <Navigate to="/login" />} />
+         <Route path="/pm-orders/:id" element={isLoggedIn && isPM ? <PMOrderDetails /> : <Navigate to="/login" />} />
 
 
 

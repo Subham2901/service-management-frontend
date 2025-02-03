@@ -163,6 +163,32 @@ const PMServiceRequestList: React.FC = () => {
               </CardContent>
             </Card>
           </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Card
+              sx={{
+                boxShadow: 3,
+                cursor: 'pointer',
+                backgroundColor: '#1e2f97',
+                color: '#fff',
+                ':hover': {
+                  boxShadow: 6,
+                  transform: 'scale(1.05)',
+                  transition: 'all 0.2s ease-in-out',
+                  backgroundColor: '#1b2786',
+                },
+              }}
+              onClick={() => navigate('/pm-orders')} // Navigate to PM Orders Page
+            >
+              <CardContent>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                  PM Orders
+                </Typography>
+                <Typography variant="body2" sx={{ lineHeight: 1.5 }}>
+                  View all orders created by you.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
       </Container>
     </div>

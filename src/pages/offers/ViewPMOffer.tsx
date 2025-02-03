@@ -67,6 +67,22 @@ const ViewPMOffer: React.FC = () => {
     }
   };
 
+  const handleApproveAndCreateOrder = async () => {
+    if (!window.confirm("Are you sure you want to approve the offers and create the order?")) return;
+  
+    setIsUpdating(true);
+    try {
+      const response = await axiosInstance.post(`/orders/create/${id}`);
+      alert('Service request approved and order created successfully!');
+      navigate(`/orders/${response.data.orderId}`);
+    } catch (err) {
+      alert('Failed to approve and create order. Please try again.');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+  
+
 
   if (loading) {
     return (
@@ -170,6 +186,14 @@ const ViewPMOffer: React.FC = () => {
           >
             Back to Details
           </Button>
+          <Button
+    variant="contained"
+    sx={{ backgroundColor: '#198754', ':hover': { backgroundColor: '#157347' } }}
+    disabled={isUpdating}
+    onClick={handleApproveAndCreateOrder}
+  >
+    {isUpdating ? 'Processing...' : 'Approve & Create Order'}
+  </Button>
         </Box>
       </Container>
     </div>
